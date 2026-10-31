@@ -1,0 +1,13 @@
+__pycache__/
+*.py[cod]
+.venv/
+.env
+.env.*
+!.env.example
+
+# Local research input and generated workbooks should not be committed.
+*.xls
+*.xlsx
+*.xlsm
+!Before extract.xlsm
+!After extract.xlsx

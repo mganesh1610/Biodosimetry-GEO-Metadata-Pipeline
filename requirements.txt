@@ -1,0 +1,6 @@
+# Direct runtime dependencies. Dependabot updates these exact versions.
+pandas==2.3.3
+requests==2.34.2
+beautifulsoup4==4.15.0
+openpyxl==3.1.5
+urllib3==2.8.0
