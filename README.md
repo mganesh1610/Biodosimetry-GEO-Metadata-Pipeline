@@ -3,7 +3,7 @@
 
 *Research collaboration support for gene-expression prediction*
 
-[![Python](https://img.shields.io/badge/Python-3.9%2B-blue.svg)](https://www.python.org/) [![pandas](https://img.shields.io/badge/pandas-%E2%89%A51.5-150458.svg)](https://pandas.pydata.org/) [![Requests](https://img.shields.io/badge/requests-%E2%89%A52.31-5A29E4.svg)](https://requests.readthedocs.io/) [![BeautifulSoup](https://img.shields.io/badge/bs4-HTML%20parser-6DB33F.svg)](https://www.crummy.com/software/BeautifulSoup/)
+[![Python](https://img.shields.io/badge/Python-3.11-blue.svg)](https://www.python.org/) [![pandas](https://img.shields.io/badge/pandas-2.3.3-150458.svg)](https://pandas.pydata.org/) [![Requests](https://img.shields.io/badge/requests-2.34.2-5A29E4.svg)](https://requests.readthedocs.io/) [![BeautifulSoup](https://img.shields.io/badge/bs4-HTML%20parser-6DB33F.svg)](https://www.crummy.com/software/BeautifulSoup/)
 
 > **Goal:** Build a reliable pipeline that mines **NCBI GEO** to compile a clean, analysis-ready metadata table for **radiation-related human/animal studies (GSE/GSM/GPL)** to support **gene-expression prediction**.
 
@@ -80,22 +80,23 @@ NCBI abstracts (radiation) ──▶ Regex ID extraction (GSE/GSM/GPL)
 
 ## ⚡ Quickstart
 
+Use Python 3.11. From the repository directory:
+
 ```bash
-# clone your repo then:
-pip install -r requirements.txt
-# or individually:
-pip install pandas requests beautifulsoup4 openpyxl urllib3
-
-# 1) Put your abstracts CSV in data/raw/
-# 2) Extract GEO IDs:
-python scripts/extract_ids_from_abstracts.py
-
-# 3) Seed workbook (optional; or just ensure the xlsm/xlsx exists)
-python scripts/make_seed_workbook.py
-
-# 4) Harvest metadata (place next to the workbook)
-python scripts/geo_extract_all_fields.py
+python3 -m venv .venv
+source .venv/bin/activate
+python -m pip install -r requirements.txt
 ```
+
+Set `INPUT_FILE` near the top of `extractor.py` to the name of the workbook you want to process, such as the included `Before extract.xlsm`, and place that workbook in your working directory. Then run `python extractor.py`. The script contacts NCBI GEO and writes a sibling `_with_dates.xlsx` file. The additional scripts shown below are workflow examples in this README; they are not included as executable files in this repository.
+
+### Security checks
+
+Install [Gitleaks](https://github.com/gitleaks/gitleaks) and [pre-commit](https://pre-commit.com/), then run `pre-commit install` once in your clone. The hook scans staged changes for secrets. Before shipping, use `gitleaks git --log-opts=--all --redact=100 .` to review Git history and `trivy fs --scanners vuln .` to check the pinned direct dependencies. Pull requests also run Gitleaks, Trivy, and CodeQL; Dependabot proposes dependency and GitHub Actions updates.
+
+For a manual AI security review before shipping, use this prompt with the current diff and repository context: “Trace lower-trust workbook and GEO metadata through parsing, network calls, temporary files, merges, and XLSX output. Report only concrete trust-boundary violations with source lines, affected principal, safe local evidence, and the smallest fix. Check Git history and dependency scanner results separately. Do not probe NCBI or other live services.”
+
+Keep workbooks containing private research data out of Git and run the extractor from a directory you control. The included sample workbooks remain tracked for this example.
 
 ---
 
@@ -126,7 +127,7 @@ print("Saved:", OUT)
 
 ### 2) Harvest GEO metadata (XML → HTML fallback)
 
-`/scripts/geo_extract_all_fields.py` (trimmed core — full script in repo)
+`extractor.py` (trimmed core — full script in the repository root)
 
 ```python
 # pip install pandas requests beautifulsoup4 openpyxl urllib3
